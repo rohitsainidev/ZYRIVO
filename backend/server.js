@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -64,6 +65,29 @@ app.get('/api/health', (req, res) => {
     status: 'ok',
     message: 'ZYRIVO backend API is up and running',
     timestamp: new Date().toISOString(),
+  });
+});
+
+// Database Diagnostics Route
+app.get('/api/db-check', async (req, res) => {
+  const uri = process.env.MONGO_URI || '';
+  let connectError = null;
+
+  if (mongoose.connection.readyState !== 1) {
+    try {
+      await mongoose.connect(uri, { serverSelectionTimeoutMS: 5000 });
+    } catch (err) {
+      connectError = err.message;
+    }
+  }
+
+  res.status(200).json({
+    hasMongoUri: !!uri,
+    isLocalhost: uri.includes('127.0.0.1') || uri.includes('localhost'),
+    maskedUri: uri ? uri.replace(/:([^@]+)@/, ':****@') : 'NOT_SET',
+    readyState: mongoose.connection.readyState,
+    status: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    connectError: connectError,
   });
 });
 
