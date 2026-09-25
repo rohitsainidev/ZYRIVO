@@ -80,7 +80,7 @@ const sendOtp = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: `OTP generated for +91-${cleanPhone}`,
-      otp: process.env.NODE_ENV === 'development' ? otp : undefined,
+      otp: otp,
     });
   } catch (error) {
     next(error);
