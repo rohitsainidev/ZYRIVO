@@ -48,6 +48,15 @@ app.use(
   })
 );
 
+// Welcome / Root Route
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Welcome to ZYRIVO Backend API! Server is running smoothly.',
+    health: '/api/health',
+  });
+});
+
 // Base Health Check Route
 app.get('/api/health', (req, res) => {
   res.status(200).json({
