@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  ArrowLeft,
   Star,
   Heart,
   ShoppingBag,
@@ -9,8 +8,10 @@ import {
   Truck,
   RotateCcw,
   Zap,
+  Ruler,
 } from 'lucide-react';
 import ProductCard from './ProductCard';
+import SizeChartModal from './SizeChartModal';
 import { fetchProducts } from '../services/api';
 import { FALLBACK_PRODUCTS } from '../data/fallbackProducts';
 
@@ -27,17 +28,61 @@ const ProductDetailPage = ({
 }) => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState('M');
+  const [isSizeChartOpen, setIsSizeChartOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
   const [catalog, setCatalog] = useState([]);
 
+  // Compute available sizes dynamically based on product category & tags
+  const availableSizes = useMemo(() => {
+    const catSlug = (product?.category?.slug || '').toLowerCase();
+    const catName = (product?.category?.name || '').toLowerCase();
+    const tags = (Array.isArray(product?.tags) ? product.tags : []).map((t) => String(t).toLowerCase());
+
+    if (
+      catSlug.includes('footwear') ||
+      catSlug.includes('shoes') ||
+      catName.includes('footwear') ||
+      tags.includes('shoes') ||
+      tags.includes('sneakers') ||
+      tags.includes('heels')
+    ) {
+      return ['6', '7', '8', '9', '10'];
+    }
+
+    if (
+      catSlug.includes('bottom') ||
+      catName.includes('bottom') ||
+      tags.includes('jeans') ||
+      tags.includes('trousers') ||
+      tags.includes('joggers') ||
+      tags.includes('pants')
+    ) {
+      return ['28', '30', '32', '34', '36'];
+    }
+
+    if (
+      catSlug.includes('watch') ||
+      catSlug.includes('bag') ||
+      catSlug.includes('beauty') ||
+      catSlug.includes('home') ||
+      tags.includes('watch') ||
+      tags.includes('bag') ||
+      tags.includes('saree')
+    ) {
+      return ['Free Size'];
+    }
+
+    return ['S', 'M', 'L', 'XL', 'XXL'];
+  }, [product]);
+
   // When product changes, reset active image and size and jump immediately to top
   useEffect(() => {
     setSelectedImage(0);
-    setSelectedSize('M');
     setQuantity(1);
+    setSelectedSize(availableSizes[0] || 'M');
     window.scrollTo(0, 0);
-  }, [product?._id]);
+  }, [product?._id, availableSizes]);
 
   // Load catalog to find similar products
   useEffect(() => {
@@ -72,25 +117,85 @@ const ProductDetailPage = ({
       !['women','men','unisex','ethnic','western','luxury','exclusive','festive','basics','casual','formal','shoes','bags','watch','watches'].includes(t)
     );
 
-    return catalog
-      .filter((p) => p._id !== product._id)
+    // Track duplicates by ID, normalized Name, and Image URL
+    const seenIds = new Set([String(product._id)]);
+    const seenNames = new Set([String(product.name || '').trim().toLowerCase()]);
+    const seenImages = new Set();
+    const currentImg = product.images?.[0]?.url || (typeof product.images?.[0] === 'string' ? product.images[0] : '');
+    if (currentImg) seenImages.add(currentImg);
+
+    const isDuplicate = (p) => {
+      const pid = String(p._id);
+      const pname = String(p.name || '').trim().toLowerCase();
+      const pimg = p.images?.[0]?.url || (typeof p.images?.[0] === 'string' ? p.images[0] : '');
+      if (seenIds.has(pid)) return true;
+      if (pname && seenNames.has(pname)) return true;
+      if (pimg && seenImages.has(pimg)) return true;
+      return false;
+    };
+
+    const addProduct = (p) => {
+      seenIds.add(String(p._id));
+      if (p.name) seenNames.add(String(p.name).trim().toLowerCase());
+      const pimg = p.images?.[0]?.url || (typeof p.images?.[0] === 'string' ? p.images[0] : '');
+      if (pimg) seenImages.add(pimg);
+      selected.push(p);
+    };
+
+    const selected = [];
+
+    // Tier 1: Scored items based on subtag, category, and shared tags
+    const scoredCandidates = catalog
+      .filter((p) => String(p._id) !== String(product._id))
       .map((p) => {
         let score = 0;
         const pTags = (Array.isArray(p.tags) ? p.tags : []).map((t) => String(t).toLowerCase());
         const pCatSlug = (p.category?.slug || '').toLowerCase();
         const pCatName = (p.category?.name || '').toLowerCase();
-        if (primarySubtag && pTags.includes(primarySubtag)) score += 10;
+        if (primarySubtag && pTags.includes(primarySubtag)) score += 12;
         score += pTags.filter((t) => targetTags.includes(t)).length * 3;
-        if (pCatSlug && pCatSlug === targetCatSlug) score += 5;
-        else if (pCatName && pCatName === targetCatName) score += 4;
+        if (pCatSlug && pCatSlug === targetCatSlug) score += 6;
+        else if (pCatName && pCatName === targetCatName) score += 5;
         if (targetTags.includes('men') && pTags.includes('men')) score += 2;
         if (targetTags.includes('women') && pTags.includes('women')) score += 2;
         return { product: p, score };
       })
       .filter((item) => item.score > 2)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 8)
-      .map((item) => item.product);
+      .sort((a, b) => b.score - a.score);
+
+    for (const item of scoredCandidates) {
+      if (selected.length >= 20) break;
+      if (!isDuplicate(item.product)) {
+        addProduct(item.product);
+      }
+    }
+
+    // Tier 2: Backfill from the exact same category
+    if (selected.length < 20) {
+      const sameCatItems = catalog.filter((p) => {
+        const pCatSlug = (p.category?.slug || '').toLowerCase();
+        const pCatName = (p.category?.name || '').toLowerCase();
+        return (pCatSlug && pCatSlug === targetCatSlug) || (pCatName && pCatName === targetCatName);
+      });
+      for (const p of sameCatItems) {
+        if (selected.length >= 20) break;
+        if (!isDuplicate(p)) {
+          addProduct(p);
+        }
+      }
+    }
+
+    // Tier 3: Backfill from related categories or general catalog
+    if (selected.length < 20) {
+      for (const p of catalog) {
+        if (selected.length >= 20) break;
+        if (!isDuplicate(p)) {
+          addProduct(p);
+        }
+      }
+    }
+
+    return selected.slice(0, 20);
   }, [product, catalog, propSimilarProducts]);
 
   const similarProducts = computedSimilar;
@@ -140,97 +245,60 @@ const ProductDetailPage = ({
   };
 
   return (
-    <div className="bg-[#f8f9fa] min-h-screen py-6 sm:py-10 animate-in fade-in duration-200">
+    <div className="bg-white min-h-screen py-4 sm:py-8 animate-in fade-in duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
 
-        {/* 1. Breadcrumb & Back Button */}
-        <div className="flex items-center justify-between gap-4 text-xs text-gray-500 pb-3 border-b border-gray-200">
-          <div className="flex items-center gap-2 flex-wrap">
-            <button
-              type="button"
-              onClick={onBack}
-              className="font-bold text-[#581c87] hover:underline cursor-pointer"
-            >
-              Home
-            </button>
-            <span>/</span>
-            <span className="text-gray-600 font-medium">
-              {product.category?.name || 'Catalog'}
-            </span>
-            <span>/</span>
-            <span className="text-gray-900 font-semibold truncate max-w-[200px] sm:max-w-[400px]">
-              {product.name}
-            </span>
-          </div>
+        {/* Main Product Detail View */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
 
-          <button
-            type="button"
-            onClick={onBack}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white border border-gray-200 hover:border-purple-300 rounded-xl text-xs font-bold text-gray-800 hover:text-[#581c87] shadow-2xs transition-all cursor-pointer"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Products</span>
-          </button>
-        </div>
+          {/* Left: Gallery (5 cols) */}
+          <div className="lg:col-span-5 space-y-4">
+            {/* Main Image Stage */}
+            <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-gray-50 group">
+              <img
+                src={images[selectedImage] || images[0]}
+                alt={product.name}
+                className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+              />
 
-        {/* 2. Meesho-Style Main Product Detail View */}
-        <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6 sm:p-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-
-            {/* Left: Gallery (5 cols) */}
-            <div className="lg:col-span-5 space-y-4">
-              {/* Main Image Stage */}
-              <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 shadow-inner group">
-                <img
-                  src={images[selectedImage] || images[0]}
-                  alt={product.name}
-                  className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                />
-
-                {discountPercent > 0 && (
-                  <span className="absolute top-4 left-4 bg-emerald-700 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
-                    {discountPercent}% OFF
-                  </span>
-                )}
-
-                <button
-                  type="button"
-                  onClick={handleWishlist}
-                  aria-label="Wishlist"
-                  className={`absolute top-4 right-4 z-10 w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${
-                    isWishlisted
-                      ? 'bg-red-50 text-red-600 scale-105'
-                      : 'bg-white/95 text-gray-600 hover:text-red-500 hover:bg-white hover:scale-110'
+              <button
+                type="button"
+                onClick={handleWishlist}
+                aria-label="Wishlist"
+                className={`absolute top-4 right-4 z-10 w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${
+                  isWishlisted
+                    ? 'bg-red-50 text-red-600 scale-105'
+                    : 'bg-white/95 text-gray-600 hover:text-red-500 hover:bg-white hover:scale-110'
+                }`}
+              >
+                <Heart
+                  className={`w-5 h-5 transition-colors ${
+                    isWishlisted ? 'fill-red-600 text-red-600' : ''
                   }`}
-                >
-                  <Heart
-                    className={`w-5 h-5 transition-colors ${
-                      isWishlisted ? 'fill-red-600 text-red-600' : ''
-                    }`}
-                  />
-                </button>
-              </div>
-
-              {/* Thumbnails list if multiple */}
-              {images.length > 1 && (
-                <div className="flex gap-2.5 overflow-x-auto pb-1">
-                  {images.map((img, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => setSelectedImage(idx)}
-                      className={`w-18 h-22 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 cursor-pointer ${
-                        selectedImage === idx
-                          ? 'border-[#581c87] ring-2 ring-purple-600/20'
-                          : 'border-gray-200 opacity-70 hover:opacity-100'
-                      }`}
-                    >
-                      <img src={img} alt="" className="w-full h-full object-cover" />
-                    </button>
-                  ))}
-                </div>
-              )}
+                />
+              </button>
             </div>
+
+            {/* Thumbnails list if multiple */}
+            {images.length > 1 && (
+              <div className="flex gap-2.5 overflow-x-auto pb-1">
+                {images.map((img, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setSelectedImage(idx)}
+                    className={`w-18 h-22 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 cursor-pointer ${
+                      selectedImage === idx
+                        ? 'border-[#581c87] ring-2 ring-purple-600/20'
+                        : 'border-gray-200 opacity-70 hover:opacity-100'
+                    }`}
+                  >
+                    <img src={img} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
             {/* Right: Product Info & Actions (7 cols) */}
             <div className="lg:col-span-7 flex flex-col justify-between">
@@ -261,8 +329,8 @@ const ProductDetailPage = ({
                     {product.numReviews || 34} Ratings & Reviews
                   </span>
                   <span className="text-xs text-gray-300">•</span>
-                  <span className="text-xs font-medium text-purple-700 bg-purple-50 px-2 py-0.5 rounded">
-                    Meesho Best Price
+                  <span className="text-xs font-medium text-[#9f2089] bg-pink-50 px-2 py-0.5 rounded">
+                    Special Price
                   </span>
                 </div>
 
@@ -284,7 +352,7 @@ const ProductDetailPage = ({
                 </div>
 
                 {/* Description */}
-                <div className="mb-6 bg-gray-50/80 rounded-2xl p-4 border border-gray-100">
+                <div className="mb-6 pt-4 border-t border-gray-100">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">
                     Product Details
                   </h3>
@@ -300,17 +368,22 @@ const ProductDetailPage = ({
                     <span className="text-xs font-bold uppercase tracking-wider text-gray-900">
                       Select Size
                     </span>
-                    <span className="text-xs text-[#581c87] font-semibold cursor-pointer hover:underline">
-                      Size Chart
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setIsSizeChartOpen(true)}
+                      className="text-xs text-[#581c87] font-semibold cursor-pointer hover:underline flex items-center gap-1 transition"
+                    >
+                      <Ruler className="w-3.5 h-3.5 text-[#581c87]" />
+                      <span>Size Chart</span>
+                    </button>
                   </div>
-                  <div className="flex gap-2.5">
-                    {['S', 'M', 'L', 'XL', 'XXL'].map((size) => (
+                  <div className="flex flex-wrap gap-2.5">
+                    {availableSizes.map((size) => (
                       <button
                         key={size}
                         type="button"
                         onClick={() => setSelectedSize(size)}
-                        className={`w-12 h-12 rounded-xl border-2 font-bold text-sm flex items-center justify-center transition-all cursor-pointer ${
+                        className={`min-w-12 h-12 px-3 rounded-xl border-2 font-bold text-sm flex items-center justify-center transition-all cursor-pointer ${
                           selectedSize === size
                             ? 'border-[#581c87] bg-purple-50 text-[#581c87] shadow-xs'
                             : 'border-gray-200 text-gray-700 hover:border-gray-400 bg-white'
@@ -423,7 +496,6 @@ const ProductDetailPage = ({
 
             </div>
           </div>
-        </div>
 
         {/* Similar Products Grid */}
         {similarProducts.length > 0 && (
@@ -445,6 +517,14 @@ const ProductDetailPage = ({
             </div>
           </div>
         )}
+        {/* Size Chart Modal Popup */}
+        <SizeChartModal
+          isOpen={isSizeChartOpen}
+          onClose={() => setIsSizeChartOpen(false)}
+          product={product}
+          selectedSize={selectedSize}
+          onSelectSize={(size) => setSelectedSize(size)}
+        />
       </div>
     </div>
   );

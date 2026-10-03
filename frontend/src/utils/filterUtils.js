@@ -4,14 +4,15 @@
  * full catalog retrieval for parent categories, and clean keyword matching.
  */
 export const matchProduct = (item, queryOrCategory) => {
+  if (!item || typeof item !== 'object') return false;
   if (!queryOrCategory || queryOrCategory === 'all') return true;
 
   const q = queryOrCategory.toLowerCase().trim();
   const name = (item.name || '').toLowerCase();
   const desc = (item.description || '').toLowerCase();
   const brand = (item.brand || '').toLowerCase();
-  const catName = (item.category?.name || '').toLowerCase();
-  const catSlug = (item.category?.slug || '').toLowerCase();
+  const catName = (item.category?.name || (typeof item.category === 'string' ? item.category : '') || '').toLowerCase();
+  const catSlug = (item.category?.slug || (typeof item.category === 'string' ? item.category : '') || '').toLowerCase();
   const tags = (Array.isArray(item.tags) ? item.tags : []).map((t) => String(t).toLowerCase());
 
   // ═════════════════════════════════════════════════════════════

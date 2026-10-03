@@ -469,80 +469,109 @@ const Navbar = ({
   return (
     <header ref={navRef} className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 shadow-xs select-none">
       {/* ─────────────────────────────────────────────────────────────
-          0. Top Luxury Offer Strip (Minimalist Noir Editorial Aesthetic)
+          0. Top Luxury Offer Strip (Professional Responsive Editorial Banner)
          ───────────────────────────────────────────────────────────── */}
       {isTopBannerVisible && (
         <div
           onClick={() => {
             if (onSearch) onSearch('Flat 80% Off');
           }}
-          className="w-full bg-gradient-to-r from-[#7a1068] via-[#9f2089] to-[#6b21a8] text-white text-[11px] sm:text-xs py-1.5 sm:py-2 px-2.5 sm:px-6 relative select-none shadow-xs transition-all duration-300 cursor-pointer hover:brightness-105 group"
+          className="w-full bg-gradient-to-r from-[#7a1068] via-[#9f2089] to-[#6b21a8] text-white py-1.5 sm:py-2 relative select-none shadow-xs transition-all duration-300 cursor-pointer hover:brightness-105 group"
           title="Click to explore Flat 80% Off Collection"
         >
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
-            {/* Left optical balance spacer */}
-            <div className="hidden lg:block w-6 shrink-0" />
+          {/* Main Centered Content Container */}
+          <div className="w-full max-w-7xl mx-auto px-7 sm:px-12 flex items-center justify-center">
+            
+            {/* Desktop & Tablet View (md+) */}
+            <div className="hidden md:flex items-center justify-center gap-2.5 lg:gap-3.5 text-center tracking-wide">
+              {/* Festive Special (Clean text, no box, no icon) */}
+              <span className="text-amber-300 font-bold uppercase tracking-[0.14em] text-[11px] shrink-0">
+                FESTIVE SPECIAL
+              </span>
 
-            {/* Editorial Center Bar */}
-            <div className="flex-1 flex items-center justify-center gap-1.5 sm:gap-4 text-center tracking-wide overflow-hidden">
-              {/* Main Headline */}
-              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                <span className="text-amber-300 font-bold uppercase tracking-[0.14em] sm:tracking-[0.16em] text-[10px] sm:text-[11px]">
-                  FESTIVE SPECIAL
-                </span>
-                <span className="text-white/20 text-xs">|</span>
-                <span className="font-semibold text-white tracking-wider text-[10.5px] sm:text-xs">
-                  UP TO 80% OFF
-                </span>
-              </div>
+              <span className="text-white/25 text-xs">|</span>
 
-              {/* Minimalist Countdown Timer (visible on md+) */}
-              <span className="text-white/20 text-xs hidden md:inline">|</span>
-              <div className="hidden md:flex items-center gap-1.5 text-white/85 text-[11px]">
-                <span className="text-white/40 uppercase text-[10px] tracking-widest font-medium">ENDS IN</span>
-                <span className="font-mono font-semibold tracking-wider text-amber-200 text-[11px]">
+              {/* Offer */}
+              <span className="font-extrabold text-white tracking-wider text-xs shrink-0">
+                UP TO 80% OFF
+              </span>
+
+              <span className="text-white/25 text-xs">|</span>
+
+              {/* Countdown Timer */}
+              <div className="inline-flex items-center gap-1.5 text-white/90 text-xs shrink-0">
+                <span className="text-white/50 uppercase text-[10px] tracking-widest font-medium">ENDS IN</span>
+                <span className="font-mono font-bold text-amber-200 tracking-wider text-[11.5px]">
                   {timeLeft.days}d : {String(timeLeft.hours).padStart(2, '0')}h : {String(timeLeft.minutes).padStart(2, '0')}m : {String(timeLeft.seconds).padStart(2, '0')}s
                 </span>
               </div>
 
-              <span className="text-white/20 text-xs">|</span>
+              <span className="text-white/25 text-xs">|</span>
 
-              {/* Code: ROHIT400 (Clean text without box background) */}
-              <div className="flex items-center shrink-0">
-                <button
-                  type="button"
-                  onClick={handleCopyCoupon}
-                  className="inline-flex items-center gap-1 text-white/90 hover:text-white transition-colors cursor-pointer"
-                  title="Click to copy and auto-apply coupon code"
-                >
-                  <span className="text-white/50 text-[10px] sm:text-[11px] uppercase tracking-wider font-medium">CODE:</span>
-                  <span
-                    className={`font-mono font-bold tracking-wider text-[11px] sm:text-xs transition-colors ${
-                      couponCopied
-                        ? 'text-emerald-300 font-extrabold'
-                        : 'text-amber-300 hover:text-amber-200 font-extrabold'
-                    }`}
-                  >
-                    {couponCopied ? 'APPLIED ✓' : 'ROHIT400'}
-                  </span>
-                  <span className="text-white/60 text-[10px] hidden sm:inline ml-1">(₹400 OFF)</span>
-                </button>
+              {/* Code: ROHIT400 (Clean text, no box background) */}
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={handleCopyCoupon}
+                onKeyDown={(e) => e.key === 'Enter' && handleCopyCoupon(e)}
+                className="inline-flex items-center gap-1 text-white/90 hover:text-white transition-colors cursor-pointer shrink-0"
+                title="Click to copy coupon code"
+              >
+                <span className="text-white/50 text-[11px] uppercase tracking-wider font-medium">CODE:</span>
+                <span className={`font-mono font-bold tracking-wider text-xs transition-colors ${
+                  couponCopied ? 'text-emerald-300 font-extrabold' : 'text-amber-300 hover:text-amber-200 font-extrabold'
+                }`}>
+                  {couponCopied ? 'APPLIED ✓' : 'ROHIT400'}
+                </span>
+                <span className="text-white/60 text-[10.5px] ml-1">(₹400 OFF)</span>
               </div>
             </div>
 
-            {/* Right: Discreet Close Action */}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsTopBannerVisible(false);
-              }}
-              className="text-white/40 hover:text-white transition cursor-pointer p-1 shrink-0 ml-1.5"
-              aria-label="Close offer banner"
-            >
-              <X size={13} />
-            </button>
+            {/* Mobile View (< md) - Clean, Centered, No Boxes, Perfectly Fitted */}
+            <div className="flex md:hidden items-center justify-center gap-1.5 xs:gap-2 text-center w-full max-w-full overflow-hidden text-[10px] xs:text-[11px]">
+              <span className="text-amber-300 font-bold uppercase tracking-wider shrink-0">
+                FESTIVE SPECIAL
+              </span>
+
+              <span className="text-white/25">|</span>
+
+              <span className="font-extrabold text-white shrink-0">
+                UP TO 80% OFF
+              </span>
+
+              <span className="text-white/25">|</span>
+
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={handleCopyCoupon}
+                onKeyDown={(e) => e.key === 'Enter' && handleCopyCoupon(e)}
+                className="inline-flex items-center gap-1 text-white/90 active:text-white shrink-0 cursor-pointer"
+                title="Tap to copy code"
+              >
+                <span className="text-white/50 uppercase text-[9.5px]">CODE:</span>
+                <span className={`font-mono font-bold tracking-wider ${
+                  couponCopied ? 'text-emerald-300 font-extrabold' : 'text-amber-300'
+                }`}>
+                  {couponCopied ? 'APPLIED ✓' : 'ROHIT400'}
+                </span>
+              </div>
+            </div>
+
           </div>
+
+          {/* Right Pinned Close Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsTopBannerVisible(false);
+            }}
+            className="absolute right-1.5 sm:right-3.5 top-1/2 -translate-y-1/2 p-1 text-white/50 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+            aria-label="Close offer banner"
+          >
+            <X size={14} />
+          </button>
         </div>
       )}
 

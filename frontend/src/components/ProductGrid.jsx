@@ -139,9 +139,9 @@ const ProductGrid = ({
 
         if (isMounted) {
           if (prodData && prodData.products && prodData.products.length > 0) {
-            setProducts(prodData.products);
+            setProducts(prodData.products.filter((p) => p && typeof p === 'object'));
           } else {
-            setProducts(FALLBACK_PRODUCTS);
+            setProducts(FALLBACK_PRODUCTS.filter((p) => p && typeof p === 'object'));
           }
 
           if (catData && catData.length > 0) {
@@ -151,7 +151,7 @@ const ProductGrid = ({
       } catch (err) {
         if (isMounted) {
           console.error('Error fetching data for grid:', err);
-          setProducts(FALLBACK_PRODUCTS);
+          setProducts(FALLBACK_PRODUCTS.filter((p) => p && typeof p === 'object'));
         }
       } finally {
         if (isMounted) {
@@ -169,7 +169,9 @@ const ProductGrid = ({
 
   // Filter & Sort Products
   const filteredProducts = useMemo(() => {
-    let list = [...products];
+    let list = Array.isArray(products)
+      ? products.filter((item) => item && typeof item === 'object')
+      : [];
 
     // 1. Search Query filter
     if (searchQuery && searchQuery.trim()) {
@@ -184,20 +186,20 @@ const ProductGrid = ({
     // 3. Sorting
     if (sortBy === 'price_asc') {
       list.sort((a, b) => {
-        const pA = a.discountPrice || a.price;
-        const pB = b.discountPrice || b.price;
+        const pA = a ? (a.discountPrice || a.price || 0) : 0;
+        const pB = b ? (b.discountPrice || b.price || 0) : 0;
         return pA - pB;
       });
     } else if (sortBy === 'price_desc') {
       list.sort((a, b) => {
-        const pA = a.discountPrice || a.price;
-        const pB = b.discountPrice || b.price;
+        const pA = a ? (a.discountPrice || a.price || 0) : 0;
+        const pB = b ? (b.discountPrice || b.price || 0) : 0;
         return pB - pA;
       });
     } else if (sortBy === 'rating') {
-      list.sort((a, b) => (b.ratings || 0) - (a.ratings || 0));
+      list.sort((a, b) => ((b?.ratings) || 0) - ((a?.ratings) || 0));
     } else if (sortBy === 'featured') {
-      list.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0));
+      list.sort((a, b) => (b?.isFeatured ? 1 : 0) - (a?.isFeatured ? 1 : 0));
     }
 
     return list;
@@ -249,9 +251,6 @@ const ProductGrid = ({
             <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight capitalize">
               {getHeaderTitle()}
             </h1>
-            <span className="text-xs sm:text-sm font-medium text-gray-400">
-              {displayedProducts.length} {displayedProducts.length === 1 ? 'result' : 'results'}
-            </span>
           </div>
 
           {/* Sort selector */}

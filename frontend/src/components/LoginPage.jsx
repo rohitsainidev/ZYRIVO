@@ -279,7 +279,7 @@ export default function LoginPage({ onLoginSuccess, onBackToStore, customTitle, 
 
                   <div className="text-center pt-2">
                     <p className="text-[11px] text-gray-500 leading-relaxed">
-                      By continuing, you agree to Meesho's{' '}
+                      By continuing, you agree to ZYRIVO's{' '}
                       <span className="text-[#9f2089] font-semibold hover:underline cursor-pointer">
                         Terms &amp; Conditions
                       </span>{' '}

@@ -207,7 +207,7 @@ const WishlistDrawer = ({
                               {formatINR(origPrice)}
                             </span>
                           )}
-                          <span className="text-[11px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded ml-auto">
+                          <span className="text-[11px] text-emerald-600 font-medium ml-auto">
                             Free Delivery
                           </span>
                         </div>

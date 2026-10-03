@@ -156,28 +156,10 @@ const CartDrawer = ({
             </button>
           </div>
         ) : (
-          /* Cart Items & Order Summary Layout — Streamlined Vertical Flow */
-          <div className="max-w-3xl mx-auto space-y-5">
-            {/* 1. Products Section */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between bg-white px-4 py-3 sm:px-5 sm:py-3.5 rounded-2xl border border-gray-200/90 shadow-2xs">
-                <div>
-                  <h1 className="text-base sm:text-lg font-bold text-gray-900 flex items-baseline gap-2">
-                    <span>Order Items</span>
-                    <span className="text-xs sm:text-sm font-medium text-gray-400">
-                      ({totalItemsCount} {totalItemsCount === 1 ? 'Product' : 'Products'})
-                    </span>
-                  </h1>
-                </div>
-                <button
-                  type="button"
-                  onClick={onClearCart}
-                  className="text-xs font-semibold text-gray-500 hover:text-rose-600 transition cursor-pointer flex items-center gap-1"
-                >
-                  <Trash2 size={13} /> Clear Bag
-                </button>
-              </div>
-
+          /* Cart Items & Order Summary Layout — 2-Column Responsive Layout */
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+            {/* Left Column: Products List & Assurance Badges */}
+            <div className="lg:col-span-7 xl:col-span-8 space-y-3">
               {/* Items Card List — Compact Meesho Style (One Row / Single Line Layout) */}
               <div className="space-y-2.5">
                 {cartItems.map((item) => {
@@ -314,7 +296,7 @@ const CartDrawer = ({
                                 ? onMoveToWishlist(item)
                                 : onRemoveItem(item._id, item.selectedSize)
                             }
-                            className="text-gray-400 hover:text-purple-600 p-1.5 rounded-lg hover:bg-purple-50 transition cursor-pointer"
+                            className="text-gray-400 hover:text-purple-600 p-1.5 transition cursor-pointer"
                             title="Move to Wishlist"
                           >
                             <Heart size={15} />
@@ -323,7 +305,7 @@ const CartDrawer = ({
                           <button
                             type="button"
                             onClick={() => onRemoveItem(item._id, item.selectedSize)}
-                            className="text-gray-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition cursor-pointer"
+                            className="text-gray-400 hover:text-rose-600 p-1.5 transition cursor-pointer"
                             title="Remove"
                           >
                             <Trash2 size={15} />
@@ -334,10 +316,28 @@ const CartDrawer = ({
                   );
                 })}
               </div>
+
+              {/* Delivery & Trust Assurance Badges in Left Column */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                <div className="p-3.5 rounded-xl bg-white border border-gray-200 flex items-center gap-3 text-xs text-gray-700 shadow-2xs">
+                  <Truck size={18} className="text-purple-600 shrink-0" />
+                  <span>Free Express Delivery Across India</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-white border border-gray-200 flex items-center gap-3 text-xs text-gray-700 shadow-2xs">
+                  <RotateCcw size={18} className="text-purple-600 shrink-0" />
+                  <span>7 Days Free Doorstep Return & Exchange</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-white border border-gray-200 flex items-center gap-3 text-xs text-gray-700 shadow-2xs">
+                  <ShieldCheck size={18} className="text-purple-600 shrink-0" />
+                  <span>100% Genuine & Quality Assured</span>
+                </div>
+              </div>
             </div>
 
-            {/* 2. Apply Privilege Coupon (Placed Below Products) */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-xs space-y-3">
+            {/* Right Column: Privilege Coupon & Price Summary Breakdown (Sticky on Desktop) */}
+            <div className="lg:col-span-5 xl:col-span-4 space-y-4 lg:sticky lg:top-24">
+              {/* 2. Apply Privilege Coupon */}
+              <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-xs space-y-3">
               <div className="flex items-center gap-2 text-xs font-bold text-gray-800 uppercase tracking-wider">
                 <Tag size={15} className="text-purple-600" />
                 <span>Apply Privilege Coupon</span>
@@ -491,20 +491,6 @@ const CartDrawer = ({
               </div>
             </div>
 
-            {/* 4. Trust Badges */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-              <div className="p-3.5 rounded-xl bg-white border border-gray-200 flex items-center gap-3 text-xs text-gray-700">
-                <Truck size={18} className="text-purple-600 shrink-0" />
-                <span>Free Express Delivery Across India</span>
-              </div>
-              <div className="p-3.5 rounded-xl bg-white border border-gray-200 flex items-center gap-3 text-xs text-gray-700">
-                <RotateCcw size={18} className="text-purple-600 shrink-0" />
-                <span>7 Days Free Doorstep Return & Exchange</span>
-              </div>
-              <div className="p-3.5 rounded-xl bg-white border border-gray-200 flex items-center gap-3 text-xs text-gray-700">
-                <ShieldCheck size={18} className="text-purple-600 shrink-0" />
-                <span>100% Genuine & Quality Assured</span>
-              </div>
             </div>
           </div>
         )}

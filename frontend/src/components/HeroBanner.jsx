@@ -59,32 +59,13 @@ const HeroBanner = ({ onShopClick, onCategorySelect }) => {
             {/* Left Side: Headline + Value Pillars + CTA */}
             <div className="w-full md:w-1/2 flex flex-col justify-center items-start space-y-6 text-left z-10">
               
-              {/* Brand Tag (Editorial typography with calm luxury shimmer & beacon) */}
-              <div className="group flex items-center gap-2.5 text-xs font-semibold select-none cursor-default">
-                {/* Calm Ambient Breathing Beacon */}
-                <span className="relative flex h-2 w-2 items-center justify-center">
-                  <span className="animate-calm-beacon absolute inline-flex h-full w-full rounded-full bg-[#9f2089]" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#9f2089]" />
-                </span>
-
-                <span className="text-xs font-black tracking-[0.18em] uppercase luxury-gradient-text transition-all duration-500 group-hover:tracking-[0.22em]">
-                  ZYRIVO Official Store
-                </span>
-
-                <span className="text-gray-300">•</span>
-
-                <span className="text-[11px] sm:text-xs text-gray-500 font-semibold tracking-wider uppercase transition-colors duration-300 group-hover:text-gray-800">
-                  Festive Season 2026
-                </span>
-              </div>
-
-              {/* Editorial Fashion Heading */}
+              {/* Heading */}
               <div className="space-y-1.5">
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-950 tracking-tight leading-[1.12]">
                   Lowest Prices,
                 </h1>
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif italic font-normal tracking-tight leading-[1.12] bg-gradient-to-r from-[#9f2089] via-fuchsia-600 to-[#7c3aed] bg-clip-text text-transparent">
-                  Best Quality Shopping.
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.12] bg-gradient-to-r from-[#9f2089] via-fuchsia-600 to-[#7c3aed] bg-clip-text text-transparent">
+                  Best Quality Shopping
                 </h2>
                 <p className="text-xs sm:text-sm text-gray-600 font-medium pt-1 max-w-md leading-relaxed">
                   Direct from certified artisan makers across India. Discover authentic ethnic styles, modern trends, and guaranteed quality.

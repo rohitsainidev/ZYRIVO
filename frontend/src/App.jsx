@@ -318,7 +318,6 @@ function App() {
       setPendingCheckout(true);
       setIsCartOpen(false);
       setIsLoginPage(true);
-      setIsLoginModalOpen(false);
       try {
         window.history.pushState(null, '', '#login');
       } catch {}

@@ -141,30 +141,13 @@ export default function SupplierLoginPage({
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 md:bg-[#f8fafc] text-gray-900 flex flex-col justify-between py-6 px-4 sm:px-6 lg:px-8 selection:bg-purple-600 selection:text-white">
-      {/* Top Bar with Back to Store */}
-      <header className="max-w-7xl w-full mx-auto flex items-center justify-between pb-4 border-b border-gray-200/80">
-        <button
-          type="button"
-          onClick={handleGoBack}
-          className="flex items-center gap-2 text-gray-700 hover:text-black text-xs sm:text-sm font-semibold transition cursor-pointer bg-white hover:bg-gray-100 px-4 py-2 rounded-xl border border-gray-200 shadow-2xs"
-        >
-          <ArrowLeft size={16} />
-          <span>Back to Store</span>
-        </button>
-
-        <div className="flex items-center gap-2 bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-full">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-xs font-semibold">Merchant Gateway Active</span>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-stone-50 md:bg-[#f8fafc] text-gray-900 flex flex-col justify-center py-8 px-4 sm:px-6 lg:px-8 selection:bg-purple-600 selection:text-white">
       {/* Main Container */}
-      <main className="max-w-5xl w-full mx-auto my-auto py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+      <main className="max-w-5xl w-full mx-auto my-auto py-4 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
         {/* Left Side: Supplier Value Props */}
         <div className="lg:col-span-6 space-y-6 text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 border border-purple-200 text-purple-700 text-xs font-bold tracking-wide uppercase">
-            <Building2 size={13} />
+          <div className="inline-flex items-center gap-2 text-purple-700 text-xs font-bold tracking-wide uppercase">
+            <Building2 size={14} />
             <span>Dedicated Merchant Portal</span>
           </div>
 
@@ -182,9 +165,7 @@ export default function SupplierLoginPage({
           {/* Highlights */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
             <div className="p-4 rounded-2xl bg-white border border-gray-200 shadow-2xs flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-purple-50 text-purple-700 shrink-0">
-                <Package size={20} />
-              </div>
+              <Package size={22} className="text-purple-700 shrink-0 mt-0.5" />
               <div>
                 <h4 className="text-xs font-bold text-gray-900">Direct Catalog Control</h4>
                 <p className="text-[11px] text-gray-500 mt-0.5">Add, update prices, manage stock &amp; variants.</p>
@@ -192,9 +173,7 @@ export default function SupplierLoginPage({
             </div>
 
             <div className="p-4 rounded-2xl bg-white border border-gray-200 shadow-2xs flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-emerald-50 text-emerald-700 shrink-0">
-                <TrendingUp size={20} />
-              </div>
+              <TrendingUp size={22} className="text-emerald-700 shrink-0 mt-0.5" />
               <div>
                 <h4 className="text-xs font-bold text-gray-900">Live Sales Tracking</h4>
                 <p className="text-[11px] text-gray-500 mt-0.5">Automated invoices, COD &amp; UPI settlements.</p>

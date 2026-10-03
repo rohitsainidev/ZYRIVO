@@ -81,19 +81,6 @@ const ProductCard = ({
           loading="lazy"
         />
 
-        {/* Badges Overlay */}
-        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 z-10 pointer-events-none">
-          {product.isFeatured && (
-            <span className="bg-slate-900/90 text-white text-[9px] sm:text-[10px] font-semibold tracking-wider px-2 py-0.5 rounded sm:rounded-md uppercase shadow-xs">
-              Bestseller
-            </span>
-          )}
-          {discountPercent > 0 && (
-            <span className="bg-[#9f2089] text-white text-[9px] sm:text-[10px] font-bold tracking-wider px-1.5 py-0.5 rounded sm:rounded-md uppercase shadow-xs">
-              {discountPercent}% Off
-            </span>
-          )}
-        </div>
 
         {/* Wishlist Heart Button */}
         <button
@@ -139,7 +126,7 @@ const ProductCard = ({
             <span className="text-[10px] sm:text-[11px] text-slate-400">
               ({product.numReviews || 12})
             </span>
-            <span className="hidden sm:inline text-[9px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-200/60 px-1.5 py-0.2 rounded ml-auto">
+            <span className="hidden sm:inline text-[10px] sm:text-[11px] text-emerald-600 font-medium ml-auto">
               Free Delivery
             </span>
           </div>
